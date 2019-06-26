@@ -47,8 +47,6 @@ We estabilished a solid and easy way to run a range of benchmark test cases to v
 |3| Flow over a Cylinder         | Cylinder         |[Mittal and Balachandar (1995)](https://www.researchgate.net/publication/252073966_Effect_of_three-dimensionality_on_the_lift_and_drag_of_nominal_two-dimensional_cylinders)
 |4| Periodic Hill                | Periodic-Hill    |[Breuer et al. (2009)](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=1&ved=2ahUKEwiR9fjTx97cAhWCC5AKHbItAwEQFjAAegQIAhAC&url=https%3A%2F%2Fcfd.spbstu.ru%2Fagarbaruk%2Fdoc%2F2009_Breuer-et-al._Flow-over-periodic-hills.-Numerical-and-experimental-study-in-a-wide-range-of-Reynolds-numbers.pdf&usg=AOvVaw0pL7mF2TaPEbY0a8dOK-fN)
 |5| Gravity Current              | Lock-exchange    |[Necker et al. (2002)](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.483.5774&rep=rep1&type=pdf)
-|6| Boundary Layer               | TBL              |
-
 
 ## New compiling FLAGS
 If the flags are not specified in the Makefile, the compile ignore the sections related to each flag. For example, if you do not need IBM in your simulation, do not compile the code with -DIBM, 
@@ -153,7 +151,7 @@ In order to compile and execute Incompact3d in the latest Ubuntu version please 
 
 #### Fedora/RHEL/CentOS
 
-On RHEL/CentOS 6 systems:
+On RHEL/CentOS systems:
 
     sudo dnf install gcc-gfortran
 
@@ -181,7 +179,6 @@ The code is compiled with the mpiifort command and the appropriate flags are set
 If you eish to compile the code with Intel Compiler use:
 
       LCL = local# local,lad,sdu,archer
-      IVER = 17# 15,16,17,18
       CMP = intel
       FFT = mkl
       
