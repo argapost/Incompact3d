@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/xcompact3d/Incompact3d.svg?branch=master)](https://travis-ci.org/xcompact3d/Incompact3d)
 
-## The Incompact3d code
+## The Incompact3d solver
 
-Incompact3d is a Fortran-MPI based, finite difference code for solving the incompressible Navier-Stokes equations along with multiple scalar transport equations.
+Incompact3d is Fortran-MPI solver for the incompressible Navier-Stokes equations along with multiple scalar transport equations based on compact finite-difference schemes.
 
-This repository contains a major upgrade in the Incompact3d code. The new version is faster, more flexible and friendly for new users.
+This repository contains a major upgrade in the Incompact3d code. This version is faster, more flexible and friendly for new users.
 
 The main homepage for Incompact3d can be found at [incompact3d.com](https://www.incompact3d.com/). You can find a list of the work related to the code.
 
