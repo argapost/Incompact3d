@@ -1,10 +1,3 @@
-<a name="logo"/>
-<div align="center">
-<a href="https://www.incompact3d.com" target="_blank">
-<img src="https://www.incompact3d.com/uploads/5/8/7/2/58724623/incompact3d.png" alt="Logo" width="300" height="100"></img>
-</a>
-</div>
-
 Linux [![Build Status](https://travis-ci.org/xcompact3d/Incompact3d.svg?branch=master)](https://travis-ci.org/xcompact3d/Incompact3d)
 
 ## The Incompact3d code
