@@ -9,13 +9,13 @@ Linux [![Build Status](https://travis-ci.org/xcompact3d/Incompact3d.svg?branch=m
 
 ## The Incompact3d code
 
-Incompact3d is a Fortran-MPI based, finite difference high-performance code for solving the incompressible Navier-Stokes equation and as many as you need scalar transport equations.
+Incompact3d is a Fortran-MPI based, finite difference code for solving the incompressible Navier-Stokes equations along with multiple scalar transport equations.
 
-This repository contains a major upgrade in the Incompact3d code. The new version is faster, more flexible and user friendly.
+This repository contains a major upgrade in the Incompact3d code. The new version is faster, more flexible and friendly for new users.
 
 The main homepage for Incompact3d can be found at [incompact3d.com](https://www.incompact3d.com/). You can find a list of the work related to the code.
 
-This is the GitHub repository of Incompact3d source code, including instructions for running and compiling Incompact3d, below.
+Basic instructions for running and compiling the code can be found below.
 
 ## Resources
 
@@ -38,7 +38,7 @@ New users and developers are welcome to join.
 
 ### Benchmark test cases for code comparison ###
 
-We estabilished a solid and easy way to run a range of benchmark test cases to verify the code. Incompact3d works now on a flow configuration specific file. You must choose a case and set it on the 'Makefile' and recompile. The following cases are set to match the parameters for cases of reference articles obtained with different codes.
+We established a solid and easy way to run a range of benchmark test cases to verify the code. Incompact3d works now on a flow configuration specific file. You must choose a case and set it on the 'Makefile' and recompile. The following cases are set to match the parameters for cases of reference articles obtained with different codes.
 
 |Code| Flow configuration             | BC File         | Reference | Dataset |
 |:----------------:|:----------------:|:----------------:|:----------------:|:----------------:|
@@ -49,21 +49,21 @@ We estabilished a solid and easy way to run a range of benchmark test cases to v
 |5| Gravity Current              | Lock-exchange    |[Necker et al. (2002)](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.483.5774&rep=rep1&type=pdf)
 
 ## New compiling FLAGS
-If the flags are not specified in the Makefile, the compile ignore the sections related to each flag. For example, if you do not need IBM in your simulation, do not compile the code with -DIBM, 
+If the flags are not specified in the Makefile, the compiler ignores the sections related to each flag. For example, if you do not need IBM in your simulation, do not compile the code with -DIBM, 
 
    -DDOUBLE_PREC - use double-precision
    -DSAVE_SINGLE - save 3D data in single-precision
-   -DDEBG        - debuggin incompact3d.f90
+   -DDEBG        - debugging incompact3d.f90
    -DIBM         - enable IBM calls
    -DPOST        - enable statistics processing
    -DVISU        - enable visu.f90
    -DVISUEXTRA   - enable extra options visu.f90
    -DELES        - enable explicit LES modelling
-   -DSTRETCHING  - enable mesh stretching in y direction
+   -DSTRETCHING  - enable mesh stretching in the y-direction
 
-**Note:** In order to compile the code with the apropiate flags you must enter the -D$FLAG, i.e., -DDOUBLE_PREC
+**Note:** In order to compile the code with the appropriate flags you must enter the -D$FLAG, i.e., -DDOUBLE_PREC
 
-You can do an export of the variable in order to the Makefile knows what BC you want to compiler
+You can do an export of the variable in order to the Makefile knows what BC you want to compile
        export FLOW_TYPE=Channel-flow
 or uncomment line 19 from the Makefile
 
@@ -80,12 +80,12 @@ Then, acquire the source code by cloning the git repository:
 
 Be sure to also configure your system to use the appropriate proxy settings, e.g. by setting the `https_proxy` and `http_proxy` variables.)
 
-By default you will be building the latest unstable version of Incompact3d. However, most users should use the most recent stable version of Incompact3d, which is currently the `2.0` series of releases. You can get this version by changing to the Incompact3d directory and running
+By default, you will be building the latest unstable version of Incompact3d. However, most users should use the most recent stable version of Incompact3d, which is currently the `2.0` series of releases. You can get this version by changing to the Incompact3d directory and running
 
     git checkout v2.0.1
 
 Now run `make` to build the `Incompact3d` executable. To perform a parallel build, use `make -j N` and supply the maximum number of concurrent processes. (See [Platform Specific Build Notes] for details.)
-This takes a while, but only has to be done once. If the defaults in the build do not work for you, and you need to set specific make parameters, you can save them in `Make.user`. The build will automatically check for the existence of `Makefile` and use it if it exists.
+This takes a while but only has to be done once. If the defaults in the build do not work for you, and you need to set specific make parameters, you can save them in `Make.user`. The build will automatically check for the existence of `Makefile` and use it if it exists.
 Building Incompact3d requires very little of disk space and virtual memory.
 
 **Note:** The compiling process 
@@ -96,7 +96,7 @@ Now you should be able to run Incompact3d like this:
 
     mpirun -n 4 ./incompact3d
 
-If everything works correctly, you will see a Incompact3d banner and an interactive prompt into which you can enter expressions for evaluation. (Errors related to libraries might be caused by old, incompatible libraries sitting around in your PATH. In this case, try moving the `Incompact3d` directory earlier in the PATH).
+If everything works correctly, you will see an Incompact3d banner and an interactive prompt into which you can enter expressions for evaluation. (Errors related to libraries might be caused by old, incompatible libraries sitting around in your PATH. In this case, try moving the `Incompact3d` directory earlier in the PATH).
 
 ### Updating an existing source tree
 
@@ -119,7 +119,7 @@ latest version.
    ```sh
     *** This error is usually fixed by running 'make clean'. If the error persists, try 'make cleanall' ***
    ```
-   As described, running `make clean && make` is usually sufficient. Occasionally, the stronger cleanup done by `make cleanall` is needed.
+   As described, running `make clean && make` is usually sufficient. Occasionally, the stronger cleanup is done by `make cleanall` is needed.
 
 
 ## Platform-Specific Notes
@@ -158,7 +158,7 @@ On RHEL/CentOS systems:
 ### OS X
 
 You need to have the current Xcode command line utilities installed: run `xcode-select --install` in the terminal.
-You will need to rerun this terminal command after each OS X update, otherwise you may run into errors involving missing libraries or headers. You will also need a 64-bit gfortran to compile the code. The gfortran-4.7 (and newer) compilers in Brew, Fink, and MacPorts work for building Incompact3d. On current systems, we recommend that you install the command line tools as described above. Older systems do not have a separate command line tools package from Apple, and will require a full Xcode install. On these, you will need at least Xcode 4.3.3. In Xcode prior to v5.0, you can alternatively go to Preferences -> Downloads and select the Command Line Utilities.
+You will need to rerun this terminal command after each OS X update, otherwise, you may run into errors involving missing libraries or headers. You will also need a 64-bit gfortran to compile the code. The gfortran-4.7 (and newer) compilers in Brew, Fink, and MacPorts work for building Incompact3d. On current systems, we recommend that you install the command line tools as described above. Older systems do not have a separate command line tools package from Apple and will require a full Xcode install. On these, you will need at least Xcode 4.3.3. In Xcode prior to v5.0, you can alternatively go to Preferences -> Downloads and select the Command Line Utilities.
 
 
 ### Intel compilers and Math Kernel Library (MKL)
@@ -186,6 +186,6 @@ If you eish to compile the code with Intel Compiler use:
       
 ## GitHub Configuration
 
-To add you SSH key to your GitHub account please follow the steps https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ or just copy the content of the id_rsa.pub file to your clipboard, go to Personal settings and add a new SSH key:
+To add your SSH key to your GitHub account please follow the steps https://help.github.com/articles/adding-a-new-ssh-key-to-your-github-account/ or just copy the content of the id_rsa.pub file to your clipboard, go to Personal settings and add a new SSH key:
 
     cat ~/.ssh/id_rsa.pub
