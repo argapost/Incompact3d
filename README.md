@@ -18,12 +18,7 @@ Basic instructions for running and compiling the code can be found below.
 - **Discussion section (FORUM):** <https://github.com/xcompact3d/Incompact3d/issues>
 - **Git clone URL-SSH:** <git@github.com:xcompact3d/Incompact3d.git>
 - **Git clone URL-HTTPS:** <https://github.com/xcompact3d/Incompact3d.git>
-
-New users and developers are welcome to join.
-
-### External Resources
-
-- [**Twitter**](https://twitter.com/incompact3d)
+- **Twitter:** <https://twitter.com/incompact3d>
 
 ### Main improvements/changes ### 
 
