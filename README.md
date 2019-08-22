@@ -1,5 +1,15 @@
 [![Build Status](https://travis-ci.org/xcompact3d/Incompact3d.svg?branch=master)](https://travis-ci.org/xcompact3d/Incompact3d)
 
+**ATTENTION:** A preview of the new release called Xcompact3d is available on the release branch. To obtain it, do:
+
+   git checkout --track origin/release
+   
+this will setup a new branch called release. You can switch back and forth by running
+
+   git checkout <branch>
+   
+For further instructions, see README.md on the release branch.
+
 ## The Incompact3d solver
 
 Incompact3d is Fortran-MPI solver for the incompressible Navier-Stokes equations along with multiple scalar transport equations based on compact finite-difference schemes.
