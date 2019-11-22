@@ -15,6 +15,9 @@ IVER = 17# 15,16,17,18
 CMP = gcc# intel,gcc
 FFT = generic# generic,fftw3
 
+######## NETCDF include ########
+NETCDFloc = /usr/local
+NETCDFlib = -I${NETCDFloc}/include -L${NETCDFloc}/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5 -lz -lcurl -lm
 #######CMP settings###########
 ifeq ($(CMP),intel)
 FC = mpiifort
@@ -66,15 +69,15 @@ else ifeq ($(FFT),generic)
 endif
 
 #######OPTIONS settings###########
-OPT = -I$(SRCDIR) -I$(DECOMPDIR) $(FFLAGS)
-LINKOPT = $(FFLAGS)
+OPT = -I$(SRCDIR) -I$(DECOMPDIR) $(FFLAGS) $(NETCDFlib)
+LINKOPT = $(FFLAGS) $(NETCDFlib)
 #-----------------------------------------------------------------------
 # Normally no need to change anything below
 
 all: xcompact3d
 
 xcompact3d : $(OBJDECOMP) $(OBJ)
-	$(FC) -o $@ $(LINKOPT) $(OBJDECOMP) $(OBJ) $(LIBFFT)
+	$(FC) -o $@ $(LINKOPT) $(OBJDECOMP) $(OBJ) $(LIBFFT) $(NETCDFlib)
 
 $(OBJDECOMP):$(DECOMPDIR)%.o : $(DECOMPDIR)%.f90
 	$(FC) $(FFLAGS) $(OPT) $(DEFS) $(DEFS2) $(INC) -c $<

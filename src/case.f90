@@ -90,6 +90,11 @@ CONTAINS
 
        CALL init_channel (ux1, uy1, uz1, ep1, phi1)
 
+    ELSEIF (itype.EQ.itype_channel_ncdfr) THEN 
+
+       print *,'Initialise from netcdf file'
+       CALL init_channel_ncdfr (ux1, uy1, uz1, ep1) ! initialise from netcdf file
+
     ELSEIF (itype.EQ.itype_cyl) THEN
 
        CALL init_cyl (ux1, uy1, uz1, phi1)
@@ -138,7 +143,7 @@ CONTAINS
 
        CALL boundary_conditions_tgv (ux, uy, uz, phi)
 
-    ELSEIF (itype.EQ.itype_channel) THEN
+    ELSEIF ((itype.EQ.itype_channel).or.(itype.EQ.itype_channel_ncdfr)) THEN
 
        CALL boundary_conditions_channel (ux, uy, uz, phi)
 
@@ -177,7 +182,7 @@ CONTAINS
 
        CALL postprocess_tgv (ux, uy, uz, phi, ep)
 
-    ELSEIF (itype.EQ.itype_channel) THEN
+    ELSEIF ((itype.EQ.itype_channel).or.(itype.EQ.itype_channel_ncdfr)) THEN
 
        CALL postprocess_channel (ux, uy, uz, pp, phi, ep)
 
@@ -209,7 +214,7 @@ CONTAINS
     REAL(mytype), INTENT(IN), DIMENSION(xsize(1), xsize(2), xsize(3), nrhotime) :: rho1
     REAL(mytype), DIMENSION(xsize(1), xsize(2), xsize(3), ntime) :: dux1, duy1, duz1
 
-    IF (itype.EQ.itype_channel) THEN
+    IF ((itype.EQ.itype_channel).or.(itype.EQ.itype_channel_ncdfr)) THEN
 
        CALL momentum_forcing_channel(dux1, duy1, ux1, uy1)
 

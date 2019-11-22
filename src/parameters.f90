@@ -210,6 +210,8 @@ subroutine parameter(input_i3d)
         print *,'Simulating TGV'
      elseif (itype.eq.itype_channel) then
         print *,'Simulating channel'
+     elseif (itype.eq.itype_channel_ncdfr) then
+        print *,'Simulating channel with netcdf file as initial condition'
      elseif (itype.eq.itype_hill) then
         print *,'Simulating periodic hill'
      elseif (itype.eq.itype_cyl) then

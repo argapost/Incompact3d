@@ -220,7 +220,8 @@ module param
        itype_cyl = 5, &
        itype_dbg = 6, &
        itype_mixlayer = 7, &
-       itype_jet = 8
+       itype_jet = 8, &
+       itype_channel_ncdfr = 9 ! new type for starting channel sim with initial field from ncdf file
 
   integer :: cont_phi,itr,itime,itest,iprocessing
   integer :: ifft,istret,iforc_entree,iturb
