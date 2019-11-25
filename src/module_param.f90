@@ -77,6 +77,8 @@ module variables
   real(mytype),allocatable,dimension(:) :: sfzpt,sszpt,swzpt
 
 
+
+
   ABSTRACT INTERFACE
      SUBROUTINE DERIVATIVE_X(t,u,r,s,ff,fs,fw,nx,ny,nz,npaire)
        use decomp_2d, only : mytype
@@ -236,6 +238,9 @@ module param
   real(mytype) :: dt,re,xnu,init_noise,inflow_noise,u1,u2,angle,anglex,angley
   real(mytype) :: wrotation,ro
   real(mytype) :: dens1, dens2
+  
+  ! output file name (Argyris)
+  character(len=80) :: f_output
 
   !! Numerics control
   integer :: ifirstder,isecondder,ipinter

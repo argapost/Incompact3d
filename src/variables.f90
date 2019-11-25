@@ -96,6 +96,7 @@ module var
 
   real(mytype), save, allocatable, dimension(:,:,:) :: srt_smag, srt_smag2, srt_wale, srt_wale2 
 
+
 contains
 
   subroutine init_variables

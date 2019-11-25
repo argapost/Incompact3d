@@ -18,6 +18,7 @@ contains
     use var, only : itime
     use var, only : numscalar, nrhotime, npress
     use var, only : nx, ny, nz
+    use param, only : f_output
 
     integer,parameter :: ndim=3
     real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(in) :: ux1, uy1, uz1
@@ -31,7 +32,7 @@ contains
    !  call write_snapshot(rho1, ux1, uy1, uz1, pp3, phi1, ep1, itime)
     dimlen=(/nx,ny,nz/)
     dimname=(/'x1','y1','z1'/)
-    call write_snapshot_ncdf(ux1, uy1, uz1, pp3, itime, 'Re550_restarted.nc', dimname, dimlen)
+    call write_snapshot_ncdf(ux1, uy1, uz1, pp3, itime, f_output, dimname, dimlen)
    !  call postprocess_case(rho1, ux1, uy1, uz1, pp3, phi1, ep1)
    !  call overall_statistic(ux1, uy1, uz1, phi1, pp3, ep1)
     
@@ -169,6 +170,7 @@ contains
    implicit none
 
    character(len=*) :: file_name
+   character(len=80) :: int2char
    integer,parameter           :: ndim=3
    character(len=*),intent(in) :: dim_name(ndim)
    logical :: file_exist
@@ -185,7 +187,8 @@ contains
    integer, intent(in) :: itime
 
    if ((ivisu.ne.0).and.(mod(itime, ioutput).eq.0)) then
-      call io_check(nf90_create_par(path=file_name,&
+      write (int2char, '(I6.6)') itime
+      call io_check(nf90_create_par(path=trim(file_name)//trim(int2char)//'.nc',&
       !!!               cmode=IOR(NF90_NETCDF4,NF90_MPIPOSIX),ncid=ncid,&
                       cmode=IOR(NF90_NETCDF4,NF90_MPIIO),ncid=ncid,&
                       comm=MPI_COMM_WORLD,info=MPI_INFO_NULL))
