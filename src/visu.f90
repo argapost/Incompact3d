@@ -167,6 +167,7 @@ contains
    use var, only : npress
    use var, only : nx, ny, nz
    use var, only : xstart, xend
+   use var, only : pp1, tb1
    implicit none
 
    character(len=*) :: file_name
@@ -174,7 +175,7 @@ contains
    integer,parameter           :: ndim=3
    character(len=*),intent(in) :: dim_name(ndim)
    logical :: file_exist
-   integer :: varid(3),i
+   integer :: varid(4),i
    integer :: ncid
    integer :: dim_len(ndim),dimid(ndim),dim_len_check
    integer :: dimt(3),coord(3,2)
@@ -187,7 +188,7 @@ contains
    integer, intent(in) :: itime
 
    if ((ivisu.ne.0).and.(mod(itime, ioutput).eq.0)) then
-      write (int2char, '(I6.6)') itime
+      write (int2char, '(I6.6)') itime ! convert timestep to charater for output file name
       call io_check(nf90_create_par(path=trim(file_name)//trim(int2char)//'.nc',&
       !!!               cmode=IOR(NF90_NETCDF4,NF90_MPIPOSIX),ncid=ncid,&
                       cmode=IOR(NF90_NETCDF4,NF90_MPIIO),ncid=ncid,&
@@ -215,10 +216,16 @@ contains
       call io_check(nf90_def_var(ncid,'ux1',nf90_float,dimid,varid(1)))
       call io_check(nf90_def_var(ncid,'uy1',nf90_float,dimid,varid(2)))
       call io_check(nf90_def_var(ncid,'uz1',nf90_float,dimid,varid(3)))
+      call io_check(nf90_def_var(ncid,'pp1',nf90_float,dimid,varid(4)))
+      ! call io_check(nf90_def_var(ncid,'pp3',nf90_float,dimid,varid(5)))
+      ! call io_check(nf90_def_var(ncid,'tb1',nf90_float,dimid,varid(6)))
 
       call io_check(nf90_var_par_access(ncid, varid(1),nf90_collective))
       call io_check(nf90_var_par_access(ncid, varid(2),nf90_collective))
       call io_check(nf90_var_par_access(ncid, varid(3),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(4),nf90_collective))
+      ! call io_check(nf90_var_par_access(ncid, varid(5),nf90_collective))
+      ! call io_check(nf90_var_par_access(ncid, varid(6),nf90_collective))
 
       !-> end of definition
       call io_check(nf90_enddef(ncid))
@@ -227,6 +234,9 @@ contains
       call io_check(nf90_put_var(ncid,varid(1),ux1,start=start1,count=count1))
       call io_check(nf90_put_var(ncid,varid(2),uy1,start=start1,count=count1))
       call io_check(nf90_put_var(ncid,varid(3),uz1,start=start1,count=count1))
+      call io_check(nf90_put_var(ncid,varid(4),pp1,start=start1,count=count1))
+      ! call io_check(nf90_put_var(ncid,varid(5),pp3,start=start3,count=count3))
+      ! call io_check(nf90_put_var(ncid,varid(6),tb1,start=start1,count=count1))
 
       !-> close file
       call io_check(nf90_close(ncid))
