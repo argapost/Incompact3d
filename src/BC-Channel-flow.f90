@@ -114,8 +114,8 @@ contains
     integer,parameter :: ndim=3
 
     real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1,uy1,uz1,ep1
-    character(len=2) :: dimname(ndim)
-    integer :: dimlen(ndim)
+   !  character(len=2) :: dimname(ndim)
+   !  integer :: dimlen(ndim)
 
     ux1=zero;uy1=zero;uz1=zero
     call read_restart('../../TCF/Channel_550_Jimenez/Re550_interpolated.nc',mpid=.TRUE.)
@@ -123,9 +123,9 @@ contains
 #ifdef DEBG
     if (nrank .eq. 0) print *,'# init end ok'
 #endif
-    dimlen=(/nx,ny,nz/)
-    dimname=(/'x1','y1','z1'/)
-    call write_restart('Re550_restarted.nc', dimname, dimlen)
+   !  dimlen=(/nx,ny,nz/)
+   !  dimname=(/'x1','y1','z1'/)
+   !  call write_restart('Re550_restarted.nc', dimname, dimlen)
 
 !call write_restart('restart.nc',dimname,dimlen)
     return

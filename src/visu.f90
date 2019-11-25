@@ -17,16 +17,23 @@ contains
     use var, only : nzmsize
     use var, only : itime
     use var, only : numscalar, nrhotime, npress
-    
+    use var, only : nx, ny, nz
+
+    integer,parameter :: ndim=3
     real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(in) :: ux1, uy1, uz1
     real(mytype),dimension(xsize(1),xsize(2),xsize(3),numscalar), intent(in) :: phi1
     real(mytype),dimension(xsize(1),xsize(2),xsize(3),nrhotime), intent(in) :: rho1
     real(mytype),dimension(xsize(1),xsize(2),xsize(3)), intent(in) :: ep1
     real(mytype), dimension(ph1%zst(1):ph1%zen(1), ph1%zst(2):ph1%zen(2), nzmsize, npress), intent(in) :: pp3
+    character(len=2) :: dimname(ndim)
+    integer :: dimlen(ndim)
 
-    call write_snapshot(rho1, ux1, uy1, uz1, pp3, phi1, ep1, itime)
-    call postprocess_case(rho1, ux1, uy1, uz1, pp3, phi1, ep1)
-    call overall_statistic(ux1, uy1, uz1, phi1, pp3, ep1)
+   !  call write_snapshot(rho1, ux1, uy1, uz1, pp3, phi1, ep1, itime)
+    dimlen=(/nx,ny,nz/)
+    dimname=(/'x1','y1','z1'/)
+    call write_snapshot_ncdf(ux1, uy1, uz1, pp3, itime, 'Re550_restarted.nc', dimname, dimlen)
+   !  call postprocess_case(rho1, ux1, uy1, uz1, pp3, phi1, ep1)
+   !  call overall_statistic(ux1, uy1, uz1, phi1, pp3, ep1)
     
   end subroutine postprocessing
 
@@ -148,6 +155,97 @@ contains
     endif
   end subroutine write_snapshot
 
+  subroutine write_snapshot_ncdf(ux1, uy1, uz1, pp3, itime, file_name, dim_name, dim_len)
+   use netcdf
+   USE MPI
+   use decomp_2d, only : mytype, xsize, ysize, zsize
+
+   use param, only : ivisu, ioutput, nrhotime, ilmn, iscalar, iibm
+
+   use var, only : ph3, phG, nzmsize
+   use var, only : npress
+   use var, only : nx, ny, nz
+   use var, only : xstart, xend
+   implicit none
+
+   character(len=*) :: file_name
+   integer,parameter           :: ndim=3
+   character(len=*),intent(in) :: dim_name(ndim)
+   logical :: file_exist
+   integer :: varid(3),i
+   integer :: ncid
+   integer :: dim_len(ndim),dimid(ndim),dim_len_check
+   integer :: dimt(3),coord(3,2)
+   integer :: start1(3),count1(3)
+   integer :: start3(3),count3(3)
+
+   !! inputs
+   real(mytype), dimension(xsize(1), xsize(2), xsize(3)), intent(in) :: ux1, uy1, uz1
+   real(mytype), dimension(ph3%zst(1):ph3%zen(1),ph3%zst(2):ph3%zen(2),nzmsize,npress), intent(in) :: pp3
+   integer, intent(in) :: itime
+
+   if ((ivisu.ne.0).and.(mod(itime, ioutput).eq.0)) then
+      call io_check(nf90_create_par(path=file_name,&
+      !!!               cmode=IOR(NF90_NETCDF4,NF90_MPIPOSIX),ncid=ncid,&
+                      cmode=IOR(NF90_NETCDF4,NF90_MPIIO),ncid=ncid,&
+                      comm=MPI_COMM_WORLD,info=MPI_INFO_NULL))
+      
+      start1 =(/xstart(1),xstart(2),xstart(3)/)
+      count1 =(/xend(1),xend(2),xend(3)/)
+      count1 = count1-start1+1
+      start3 =(/phG%zst(1),phG%zst(2),phG%zst(3)/)
+      count3 =(/phG%zen(1),phG%zen(2),phG%zen(3)/)
+      count3 = count3-start3+1
+
+      !-> create/add dimensions
+      do i=1,ndim
+         if (nf90_inq_dimid(ncid,dim_name(i),dimid(i))/=nf90_noerr) then
+                 call io_check(nf90_def_dim(ncid,dim_name(i),dim_len(i),dimid(i)))
+         else
+                call io_check(nf90_inquire_dimension(ncid,dimid(i),len=dim_len_check))
+                 if (dim_len_check/=dim_len(i)) &
+                       !   call error_stop("NETCDF Error : wrong dimensions")
+                    print *, 'error'
+         endif
+      enddo
+
+      call io_check(nf90_def_var(ncid,'ux1',nf90_float,dimid,varid(1)))
+      call io_check(nf90_def_var(ncid,'uy1',nf90_float,dimid,varid(2)))
+      call io_check(nf90_def_var(ncid,'uz1',nf90_float,dimid,varid(3)))
+
+      call io_check(nf90_var_par_access(ncid, varid(1),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(2),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(3),nf90_collective))
+
+      !-> end of definition
+      call io_check(nf90_enddef(ncid))
+
+      !-> write field variable
+      call io_check(nf90_put_var(ncid,varid(1),ux1,start=start1,count=count1))
+      call io_check(nf90_put_var(ncid,varid(2),uy1,start=start1,count=count1))
+      call io_check(nf90_put_var(ncid,varid(3),uz1,start=start1,count=count1))
+
+      !-> close file
+      call io_check(nf90_close(ncid))
+   endif
+ end subroutine write_snapshot_ncdf
+
+ subroutine io_check(status)
+   ! -----------------------------------------------------------------------
+   ! io : check netcdf error output and stop code if needed
+   ! -----------------------------------------------------------------------
+   ! Matthieu Marquillie
+   ! 06/2011
+   !
+      use netcdf
+      integer,intent(in) :: status
+
+      if(status /= nf90_noerr) then
+               print*,trim(nf90_strerror(status))
+               print'(a)',"Netcdf Error : aborting"
+               stop
+      end if
+   end subroutine io_check
 endmodule visu
 
 !######################################################################################
