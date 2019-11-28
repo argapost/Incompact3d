@@ -240,7 +240,7 @@ module param
   real(mytype) :: dens1, dens2
   
   ! output file name (Argyris)
-  character(len=80) :: f_output
+  character(len=80) :: f_output, f_input
 
   !! Numerics control
   integer :: ifirstder,isecondder,ipinter

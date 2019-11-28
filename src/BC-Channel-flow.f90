@@ -118,7 +118,7 @@ contains
    !  integer :: dimlen(ndim)
 
     ux1=zero;uy1=zero;uz1=zero
-    call read_restart('../../TCF/Channel_550_Jimenez/Re550_interpolated.nc',mpid=.TRUE.)
+    call read_restart(f_input,mpid=.TRUE.)
 
 #ifdef DEBG
     if (nrank .eq. 0) print *,'# init end ok'

@@ -67,7 +67,7 @@ subroutine parameter(input_i3d)
        ivisu, ipost, &
        gravx, gravy, gravz
   NAMELIST /NumOptions/ ifirstder, isecondder, itimescheme, nu0nu, cnu, fpi2, ipinter
-  NAMELIST /InOutParam/ irestart, icheckpoint, ioutput, nvisu, iprocessing, f_output
+  NAMELIST /InOutParam/ irestart, icheckpoint, ioutput, nvisu, iprocessing, f_output, f_input
   NAMELIST /Statistics/ wrotation,spinup_time, nstat, initstat
   NAMELIST /ScalarParam/ sc, ri, uset, cp, &
        nclxS1, nclxSn, nclyS1, nclySn, nclzS1, nclzSn, &
@@ -469,7 +469,8 @@ subroutine parameter_defaults()
   izap = 1
 
   imodulo2 = 1
-  f_output = 'default' ! output file init (Argyris)
+  f_input = 'default' ! inpute netcdf file name (Argyris)
+  f_output = 'default' ! output netcdf file init (Argyris)
 
   !! CASE specific variables
   tgv_twod = .FALSE.
