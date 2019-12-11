@@ -168,6 +168,8 @@ contains
    use var, only : nx, ny, nz
    use var, only : xstart, xend
    use var, only : pp1, tb1
+
+   use tools, only : simu_stats
    implicit none
 
    character(len=*) :: file_name
@@ -188,6 +190,7 @@ contains
    integer, intent(in) :: itime
 
    if ((ivisu.ne.0).and.(mod(itime, ioutput).eq.0)) then
+      call simu_stats(5)
       write (int2char, '(I6.6)') itime ! convert timestep to charater for output file name
       call io_check(nf90_create_par(path=trim(file_name)//trim(int2char)//'.nc',&
       !!!               cmode=IOR(NF90_NETCDF4,NF90_MPIPOSIX),ncid=ncid,&
@@ -240,6 +243,7 @@ contains
 
       !-> close file
       call io_check(nf90_close(ncid))
+      call simu_stats(6)
    endif
  end subroutine write_snapshot_ncdf
 

@@ -148,7 +148,7 @@ contains
     integer :: i, j, k, is
 
     call transpose_x_to_y(ux,gx)
-    call channel_flrt(gx,two/three)
+    call channel_flrt(gx,nine/ten)
     call transpose_y_to_x(gx,ux)
 
     if (iscalar.ne.0) then
