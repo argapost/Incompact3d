@@ -12,12 +12,14 @@ DEFS = -DDOUBLE_PREC -DVERSION=\"$(GIT_VERSION)\"
 
 LCL = local# local,lad,sdu,archer
 IVER = 17# 15,16,17,18
-CMP = gcc# intel,gcc
+CMP = intel# intel,gcc
 FFT = generic# generic,fftw3
 
 ######## NETCDF include ########
-NETCDFloc = /usr/local
-NETCDFlib = -I${NETCDFloc}/include -L${NETCDFloc}/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5 -lz -lcurl -lm
+#NETCDFloc = /usr/local
+#NETCDFlib = -I${NETCDFloc}/include -L${NETCDFloc}/lib -lnetcdff -lnetcdf -lhdf5_hl -lhdf5 -lz -lcurl -lm
+#NETCDFloc = 
+NETCDFlib = -lnetcdf -lnetcdff 
 #######CMP settings###########
 ifeq ($(CMP),intel)
 FC = mpiifort

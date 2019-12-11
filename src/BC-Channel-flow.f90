@@ -148,7 +148,7 @@ contains
     integer :: i, j, k, is
 
     call transpose_x_to_y(ux,gx)
-    call channel_flrt(gx,two/three)
+    call channel_flrt(gx,nine/ten)
     call transpose_y_to_x(gx,ux)
 
     if (iscalar.ne.0) then
@@ -466,9 +466,9 @@ contains
     endif
 
 !-> get variable id
-    call io_check(nf90_inq_varid(ncid,'velocity_x',varid(1)))
-    call io_check(nf90_inq_varid(ncid,'velocity_y',varid(2)))
-    call io_check(nf90_inq_varid(ncid,'velocity_z',varid(3)))
+    call io_check(nf90_inq_varid(ncid,'ux1',varid(1)))
+    call io_check(nf90_inq_varid(ncid,'uy1',varid(2)))
+    call io_check(nf90_inq_varid(ncid,'uz1',varid(3)))
 
 
     !-> recompute dimensions, start and count if mpi

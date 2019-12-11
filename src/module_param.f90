@@ -504,6 +504,7 @@ end module parfiZ
 
 module simulation_stats
   real(8) :: tstart,time1,trank,tranksum,ttotal,tremaining,telapsed
+  real(8) :: tout_s, tout_e  
 end module simulation_stats
 
 module ibm

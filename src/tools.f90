@@ -1036,7 +1036,7 @@ contains
     integer :: iwhen
 
     if (iwhen.eq.1) then !AT THE START OF THE SIMULATION
-       tstart=zero;time1=zero;trank=zero;tranksum=zero;ttotal=zero
+       tstart=zero;time1=zero;trank=zero;tranksum=zero;ttotal=zero;tout_s=zero;tout_e=zero
        call cpu_time(tstart)
     else if (iwhen.eq.2) then !AT THE START OF A TIME STEP
        call cpu_time(time1)
@@ -1072,6 +1072,16 @@ contains
           print *,'Total wallclock (h):',real(ttotal/thirtysixthousand,4)
           print *,''
        endif
+    else if (iwhen.eq.5) then
+       call cpu_time(tout_s)
+       if (nrank==0) then
+          print *, 'Start writing result netcdf file ...'
+       endif
+    else if (iwhen.eq.6) then
+       call cpu_time(tout_e)
+       if (nrank==0) then
+         print *, 'Time for writing result netcdf file (s):',real(tout_e-tout_s)
+       endif 
     endif
     
   end subroutine simu_stats
