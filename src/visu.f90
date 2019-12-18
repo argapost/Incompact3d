@@ -159,15 +159,23 @@ contains
   subroutine write_snapshot_ncdf(ux1, uy1, uz1, pp3, itime, file_name, dim_name, dim_len)
    use netcdf
    USE MPI
-   use decomp_2d, only : mytype, xsize, ysize, zsize
+   !use decomp_2d, only : mytype, xsize, ysize, zsize
 
-   use param, only : ivisu, ioutput, nrhotime, ilmn, iscalar, iibm
+   !use param, only : ivisu, ioutput, nrhotime, ilmn, iscalar, iibm
+   USE param, disabled => itime
+   USE variables
+   USE decomp_2d
+
+   USE var, only : ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1
+   USE var, only : ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,di2
+   USE var, only : ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3
 
    use var, only : ph3, phG, nzmsize
    use var, only : npress
    use var, only : nx, ny, nz
    use var, only : xstart, xend
    use var, only : pp1, tb1
+   use var, only : xnu
 
    use tools, only : simu_stats
    implicit none
@@ -177,12 +185,19 @@ contains
    integer,parameter           :: ndim=3
    character(len=*),intent(in) :: dim_name(ndim)
    logical :: file_exist
-   integer :: varid(4),i
+   integer :: varid(5),i
    integer :: ncid
    integer :: dim_len(ndim),dimid(ndim),dim_len_check
    integer :: dimt(3),coord(3,2)
    integer :: start1(3),count1(3)
    integer :: start3(3),count3(3)
+  
+   !real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1
+   !real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2
+   !real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3
+   real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: eps
+
+
 
    !! inputs
    real(mytype), dimension(xsize(1), xsize(2), xsize(3)), intent(in) :: ux1, uy1, uz1
@@ -204,6 +219,44 @@ contains
       count3 =(/phG%zen(1),phG%zen(2),phG%zen(3)/)
       count3 = count3-start3+1
 
+      !x-derivatives
+      call derx (ta1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+      call derx (tb1,uy1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
+      call derx (tc1,uz1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
+      !y-derivatives
+      call transpose_x_to_y(ux1,td2)
+      call transpose_x_to_y(uy1,te2)
+      call transpose_x_to_y(uz1,tf2)
+      call dery (ta2,td2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      call dery (tb2,te2,di2,sy,ffy,fsy,fwy,ppy,ysize(1),ysize(2),ysize(3),0)
+      call dery (tc2,tf2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
+      !!z-derivatives
+      call transpose_y_to_z(td2,td3)
+      call transpose_y_to_z(te2,te3)
+      call transpose_y_to_z(tf2,tf3)
+      call derz (ta3,td3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)
+      call derz (tb3,te3,di3,sz,ffzp,fszp,fwzp,zsize(1),zsize(2),zsize(3),1)
+      call derz (tc3,tf3,di3,sz,ffz,fsz,fwz,zsize(1),zsize(2),zsize(3),0)
+      !!all back to x-pencils
+      call transpose_z_to_y(ta3,td2)
+      call transpose_z_to_y(tb3,te2)
+      call transpose_z_to_y(tc3,tf2)
+      call transpose_y_to_x(td2,tg1)
+      call transpose_y_to_x(te2,th1)
+      call transpose_y_to_x(tf2,ti1)
+      call transpose_y_to_x(ta2,td1)
+      call transpose_y_to_x(tb2,te1)
+      call transpose_y_to_x(tc2,tf1)
+      !du/dx=ta1 du/dy=td1 and du/dz=tg1
+      !dv/dx=tb1 dv/dy=te1 and dv/dz=th1
+      !dw/dx=tc1 dw/dy=tf1 and dw/dz=ti1
+
+      ! Compute dissipation
+      eps = xnu * (ta1**2+td1**2+tg1**2+tb1**2+te1**2+th1**2+tc1**2+tf1**2+ti1**2)
+
+
+
+
       !-> create/add dimensions
       do i=1,ndim
          if (nf90_inq_dimid(ncid,dim_name(i),dimid(i))/=nf90_noerr) then
@@ -220,14 +273,14 @@ contains
       call io_check(nf90_def_var(ncid,'uy1',nf90_float,dimid,varid(2)))
       call io_check(nf90_def_var(ncid,'uz1',nf90_float,dimid,varid(3)))
       call io_check(nf90_def_var(ncid,'pp1',nf90_float,dimid,varid(4)))
-      ! call io_check(nf90_def_var(ncid,'pp3',nf90_float,dimid,varid(5)))
+      call io_check(nf90_def_var(ncid,'eps',nf90_float,dimid,varid(5)))
       ! call io_check(nf90_def_var(ncid,'tb1',nf90_float,dimid,varid(6)))
 
       call io_check(nf90_var_par_access(ncid, varid(1),nf90_collective))
       call io_check(nf90_var_par_access(ncid, varid(2),nf90_collective))
       call io_check(nf90_var_par_access(ncid, varid(3),nf90_collective))
       call io_check(nf90_var_par_access(ncid, varid(4),nf90_collective))
-      ! call io_check(nf90_var_par_access(ncid, varid(5),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(5),nf90_collective))
       ! call io_check(nf90_var_par_access(ncid, varid(6),nf90_collective))
 
       !-> end of definition
@@ -238,7 +291,7 @@ contains
       call io_check(nf90_put_var(ncid,varid(2),uy1,start=start1,count=count1))
       call io_check(nf90_put_var(ncid,varid(3),uz1,start=start1,count=count1))
       call io_check(nf90_put_var(ncid,varid(4),pp1,start=start1,count=count1))
-      ! call io_check(nf90_put_var(ncid,varid(5),pp3,start=start3,count=count3))
+      call io_check(nf90_put_var(ncid,varid(5),eps,start=start1,count=count1))
       ! call io_check(nf90_put_var(ncid,varid(6),tb1,start=start1,count=count1))
 
       !-> close file
