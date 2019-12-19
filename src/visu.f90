@@ -169,6 +169,7 @@ contains
    USE var, only : ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1
    USE var, only : ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,di2
    USE var, only : ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3
+   
 
    use var, only : ph3, phG, nzmsize
    use var, only : npress
@@ -176,6 +177,7 @@ contains
    use var, only : xstart, xend
    use var, only : pp1, tb1
    use var, only : xnu
+   use var, only : Ux1_m
 
    use tools, only : simu_stats
    implicit none
@@ -191,12 +193,13 @@ contains
    integer :: dimt(3),coord(3,2)
    integer :: start1(3),count1(3)
    integer :: start3(3),count3(3)
+   integer :: j,k
   
    !real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ta1,tb1,tc1,td1,te1,tf1,tg1,th1,ti1,di1
    !real(mytype),dimension(ysize(1),ysize(2),ysize(3)) :: ta2,tb2,tc2,td2,te2,tf2,tg2,th2,ti2,tj2
    !real(mytype),dimension(zsize(1),zsize(2),zsize(3)) :: ta3,tb3,tc3,td3,te3,tf3,tg3,th3,ti3,di3
    real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: eps
-
+   real(mytype),dimension(xsize(1),xsize(2),xsize(3)) :: ux1_fl
 
 
    !! inputs
@@ -219,12 +222,22 @@ contains
       count3 =(/phG%zen(1),phG%zen(2),phG%zen(3)/)
       count3 = count3-start3+1
 
+      ! Compute u' (fluctuating velocity)
+      do i=1,xsize(1)
+         do j=1,xsize(2)
+            do k=1,xsize(3)
+               ux1_fl(i,j,k) = ux1(i,j,k) - Ux1_m(j)
+            enddo
+         enddo
+      enddo
+
+
       !x-derivatives
-      call derx (ta1,ux1,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
+      call derx (ta1,ux1_fl,di1,sx,ffx,fsx,fwx,xsize(1),xsize(2),xsize(3),0)
       call derx (tb1,uy1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
       call derx (tc1,uz1,di1,sx,ffxp,fsxp,fwxp,xsize(1),xsize(2),xsize(3),1)
       !y-derivatives
-      call transpose_x_to_y(ux1,td2)
+      call transpose_x_to_y(ux1_fl,td2)
       call transpose_x_to_y(uy1,te2)
       call transpose_x_to_y(uz1,tf2)
       call dery (ta2,td2,di2,sy,ffyp,fsyp,fwyp,ppy,ysize(1),ysize(2),ysize(3),1)
@@ -252,9 +265,14 @@ contains
       !dw/dx=tc1 dw/dy=tf1 and dw/dz=ti1
 
       ! Compute dissipation
-      eps = xnu * (ta1**2+td1**2+tg1**2+tb1**2+te1**2+th1**2+tc1**2+tf1**2+ti1**2)
+      ! eps = xnu * (ta1**2+td1**2+tg1**2+tb1**2+te1**2+th1**2+tc1**2+tf1**2+ti1**2)
 
-
+      eps(:,:,:) = xnu * (ta1(:,:,:) * ta1(:,:,:) + td1(:,:,:) * td1(:,:,:) &
+                        + tg1(:,:,:) * tg1(:,:,:) + tb1(:,:,:) * tb1(:,:,:) &
+                        + te1(:,:,:) * te1(:,:,:) + th1(:,:,:) * th1(:,:,:) &
+                        + tc1(:,:,:) * tc1(:,:,:) + tf1(:,:,:) * tf1(:,:,:) &
+                        + ti1(:,:,:) * ti1(:,:,:))
+      
 
 
       !-> create/add dimensions
