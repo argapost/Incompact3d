@@ -56,7 +56,8 @@ module var
   real(mytype), save, allocatable, dimension(:,:,:) :: f1,fm1
   real(mytype), save, allocatable, dimension(:,:,:) :: uxm1, uym1, phim1, prem1, dissm1
   real(mytype), save, allocatable, dimension(:,:,:) :: uxm2, uym2, phim2, prem2, dissm2
-
+  real(mytype), save, allocatable, dimension(:) :: Ux1_m
+ 
   !arrays for statistic collection
   real(mytype), save, allocatable, dimension(:,:,:) :: umean,vmean,wmean,pmean,uumean,vvmean,wwmean,uvmean,uwmean,vwmean,tmean  
   real(mytype), save, allocatable, dimension(:,:,:,:) :: phimean,phiphimean,uphimean,vphimean,wphimean
@@ -166,6 +167,9 @@ contains
     allocate(bxo(xsize(2),xsize(3)))
     allocate(byo(xsize(2),xsize(3)))
     allocate(bzo(xsize(2),xsize(3)))
+
+    ! allocate 1d mean velocity array
+    allocate(Ux1_m(xsize(2)))
 
     bxx1=zero;bxy1=zero;bxz1=zero
     byx1=zero;byy1=zero;byz1=zero

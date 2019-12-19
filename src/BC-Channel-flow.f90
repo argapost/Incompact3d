@@ -95,6 +95,7 @@ contains
           enddo
        enddo
     enddo
+    call read_1d(f_Ux1_m,mpid=.TRUE.)
 
 #ifdef DEBG
     if (nrank .eq. 0) print *,'# init end ok'
@@ -119,6 +120,8 @@ contains
 
     ux1=zero;uy1=zero;uz1=zero
     call read_restart(f_input,mpid=.TRUE.)
+    ! Read Mean velocity profile
+    call read_1d(f_Ux1_m,mpid=.TRUE.)
 
 #ifdef DEBG
     if (nrank .eq. 0) print *,'# init end ok'
@@ -494,6 +497,63 @@ contains
     call io_check(nf90_close(ncid))
    
    end subroutine read_restart
+   
+   subroutine read_1d(file_name, mpid)
+   ! -----------------------------------------------------------------------
+   ! io : read 3d variable in a netcdf file
+   ! -----------------------------------------------------------------------
+   ! Hussein RKEIN
+   ! 07/2019
+   
+    use netcdf
+    USE var, ONLY : ux1, uy1, uz1, Ux1_m
+    USE param
+    USE variables
+    USE decomp_2d
+    USE MPI
+    implicit none
+
+    character(len=*),intent(in) :: file_name
+    integer :: varid(1),i
+    integer :: ncid
+
+    integer,parameter :: ndim=3
+    integer :: dimid(ndim),dim_len_check
+    integer :: dimt(3),coord(3,2)
+    integer :: starty(1),county(1)
+    logical,optional :: mpid
+    
+    !-> open file
+    if (mpid) then
+      call io_check(nf90_open(path=file_name,&
+                    mode=IOR(NF90_NOWRITE,NF90_MPIIO),ncid=ncid,&
+                    comm=MPI_COMM_WORLD,info=MPI_INFO_NULL))
+    else
+      call io_check(nf90_open(path=file_name,mode=nf90_nowrite,ncid=ncid))
+    endif
+
+!-> get variable id
+    call io_check(nf90_inq_varid(ncid,'U',varid(1)))
+
+
+    !-> recompute dimensions, start and count if mpi
+    call mpi_global_coord(dimt,coord,'x')
+    starty(1) = coord(2,1)
+    county(1) = coord(2,2)
+
+    call io_check(nf90_var_par_access(ncid, varid(1),nf90_collective))
+   
+
+   !-> read field variable
+    call io_check(nf90_get_var(ncid,varid(1),Ux1_m,start=starty,count=county))
+
+
+
+    !-> close file
+    call io_check(nf90_close(ncid))
+   
+   end subroutine read_1d
+
 
    subroutine io_check(status)
    ! -----------------------------------------------------------------------
