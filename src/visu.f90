@@ -9,7 +9,7 @@ contains
 
   subroutine postprocessing(rho1, ux1, uy1, uz1, pp3, phi1, ep1)
 
-    use decomp_2d, only : mytype, xsize, ph1
+    use decomp_2d, only : mytype, xsize, ph1, xszV, yszV, zszV
     use case, only : postprocess_case
 
     use stats, only : overall_statistic
@@ -179,6 +179,7 @@ contains
    use var, only : pp1, tb1
    use var, only : xnu
    use var, only : Ux1_m
+   use var, only : uvisu
 
    use tools, only : simu_stats
    implicit none
