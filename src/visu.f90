@@ -180,7 +180,7 @@ contains
    use var, only : xnu
    use var, only : Ux1_m
    use var, only : uvisu
-
+  
    use tools, only : simu_stats
    implicit none
 
@@ -189,7 +189,7 @@ contains
    integer,parameter           :: ndim=3
    character(len=*),intent(in) :: dim_name(ndim)
    logical :: file_exist
-   integer :: varid(1),i
+   integer :: varid(5),i
    integer :: ncid
    integer :: dim_len(ndim),dimid(ndim),dim_len_check
    integer :: dimt(3),coord(3,2)
@@ -292,32 +292,38 @@ contains
       enddo
 
       call io_check(nf90_def_var(ncid,'ux1',nf90_float,dimid,varid(1)))
-      ! call io_check(nf90_def_var(ncid,'uy1',nf90_float,dimid,varid(2)))
-      ! call io_check(nf90_def_var(ncid,'uz1',nf90_float,dimid,varid(3)))
-      ! call io_check(nf90_def_var(ncid,'pp1',nf90_float,dimid,varid(4)))
-      ! call io_check(nf90_def_var(ncid,'eps',nf90_float,dimid,varid(5)))
-      ! ! call io_check(nf90_def_var(ncid,'tb1',nf90_float,dimid,varid(6)))
+      call io_check(nf90_def_var(ncid,'uy1',nf90_float,dimid,varid(2)))
+      call io_check(nf90_def_var(ncid,'uz1',nf90_float,dimid,varid(3)))
+      call io_check(nf90_def_var(ncid,'pp1',nf90_float,dimid,varid(4)))
+      call io_check(nf90_def_var(ncid,'eps',nf90_float,dimid,varid(5)))
+      ! call io_check(nf90_def_var(ncid,'tb1',nf90_float,dimid,varid(6)))
 
       call io_check(nf90_var_par_access(ncid, varid(1),nf90_collective))
-      ! call io_check(nf90_var_par_access(ncid, varid(2),nf90_collective))
-      ! call io_check(nf90_var_par_access(ncid, varid(3),nf90_collective))
-      ! call io_check(nf90_var_par_access(ncid, varid(4),nf90_collective))
-      ! call io_check(nf90_var_par_access(ncid, varid(5),nf90_collective))
-      ! ! call io_check(nf90_var_par_access(ncid, varid(6),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(2),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(3),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(4),nf90_collective))
+      call io_check(nf90_var_par_access(ncid, varid(5),nf90_collective))
+      ! call io_check(nf90_var_par_access(ncid, varid(6),nf90_collective))
 
       !-> end of definition
       call io_check(nf90_enddef(ncid))
 
-      !-> fine to coarse mesh
+      !-> fine to coarse mesh and write field
       call fine_to_coarseV(1,ux1,uvisu)
-
-      ! !-> write field variable
       call io_check(nf90_put_var(ncid,varid(1),uvisu,start=start1,count=count1))
-      ! call io_check(nf90_put_var(ncid,varid(2),uy1,start=start1,count=count1))
-      ! call io_check(nf90_put_var(ncid,varid(3),uz1,start=start1,count=count1))
-      ! call io_check(nf90_put_var(ncid,varid(4),pp1,start=start1,count=count1))
-      ! call io_check(nf90_put_var(ncid,varid(5),eps,start=start1,count=count1))
-      ! ! call io_check(nf90_put_var(ncid,varid(6),tb1,start=start1,count=count1))
+
+      call fine_to_coarseV(1,uy1,uvisu)
+      call io_check(nf90_put_var(ncid,varid(2),uvisu,start=start1,count=count1))
+
+      call fine_to_coarseV(1,uz1,uvisu)
+      call io_check(nf90_put_var(ncid,varid(3),uvisu,start=start1,count=count1))
+     
+      call fine_to_coarseV(1,pp1,uvisu)
+      call io_check(nf90_put_var(ncid,varid(4),uvisu,start=start1,count=count1))
+
+      call fine_to_coarseV(1,eps,uvisu)
+      call io_check(nf90_put_var(ncid,varid(5),uvisu,start=start1,count=count1))
+      ! call io_check(nf90_put_var(ncid,varid(6),tb1,start=start1,count=count1))
 
       !-> close file
       call io_check(nf90_close(ncid))
