@@ -29,7 +29,7 @@ module channel
 
   PRIVATE ! All functions/subroutines private by default
   PUBLIC :: init_channel, init_channel_ncdfr, boundary_conditions_channel, postprocess_channel, &
-       momentum_forcing_channel, &
+       momentum_forcing_channel, read_1d,&
        geomcomplex_channel
 
 contains

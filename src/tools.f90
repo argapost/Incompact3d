@@ -1156,6 +1156,9 @@ contains
        call MPI_FILE_CLOSE(fh,ierror)
     else
        if (nrank==0) print *,'RESTART from file:', filestart
+       if (nrank==0) print *,'Read mean velocity from file:', f_Ux1_m
+       call read_1d(f_Ux1_m, mpid=.TRUE.)
+
        call MPI_FILE_OPEN(MPI_COMM_WORLD, filestart, &
             MPI_MODE_RDONLY, MPI_INFO_NULL, &
             fh, ierror_o)
