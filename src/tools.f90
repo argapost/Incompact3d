@@ -1093,6 +1093,7 @@ contains
     USE variables
     USE param
     USE MPI
+    USE channel
 
     implicit none
 
